@@ -19,11 +19,11 @@ signal disableC
 signal enableA
 signal enableB
 signal enableC
-var ShotProfile = [0, 0, 0]
-var playerA = Player.instance()
-var playerB = Player.instance()
-var playerC = Player.instance()
-var playerArray = [playerA, playerB, playerC]
+var shotProfile = 0
+
+var playerA = load('res://Player.gd').new('Player A',1,2,3)
+var playerB = load('res://Player.gd').new('Player B',10,20,30)
+var playerC = load('res://Player.gd').new('Player C',100,200,300)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -37,58 +37,62 @@ func _process(delta):
 	#Calculate the responding attack
 	#Make the responding attack
 	#repeat
+	if (focus > 3):
+		print('You hit the ball with:')
+		print(shotProfile)
+		emit_signal("enableA")
+		emit_signal("enableB")
+		emit_signal("enableC")
+		focus = 1
+		shotProfile = 0
 	pass
 
-func takeTurn():
+func takeTurn(ID):
 	match focus:
 		1:
 			bumpID = ID
 			emit_signal("Select_1",ID)
-			changeShotProfile(playerArray[ID-1].bumpStats)
+			addToShot(ID.bumpStat)
 			#signal to label 1
 			#disable button A until next choice is made
 			focus += 1 
 		2:
 			setID = ID
 			emit_signal("Select_2", ID)
-			changeShotProfile(playerArray[ID-1].setStats)
-			match ID:
-				1:
-					emit_signal("enableB")
-					emit_signal("enableC")
-				2:
+			addToShot(ID.setStat)
+			# This can be done better, but i cba
+			match bumpID.name:
+				'Player A':
 					emit_signal("enableA")
-					emit_signal("enableC")
-				3:
-					emit_signal("enableA")
+				'Player B':
 					emit_signal("enableB")
+				'Player C':
+					emit_signal("enableC")
 			#signal to label 2
 			#disable button A until next turn
 			focus += 1
 		3:
 			spikeID = ID
 			emit_signal("Select_3",ID)
-			changeShotProfile(playerArray[ID-1].spikeStats)
-			print(ShotProfile)
+			addToShot(ID.spikeStat)
 			#signal to label 3
 			#disable button A until next turn
-			focus = 1
+			focus += 1
 
-func changeShotProfile(Stats):
-	for i in range(0,3):
-		ShotProfile[i] += Stats[i]
+func addToShot(stat):
+	shotProfile += stat
 
 func _on_A_pressed():
-	ID = 1
-	takeTurn()
+	ID = playerA
+	takeTurn(ID)
 	emit_signal("disableA")
 
 func _on_B_pressed():
-	ID = 2
-	takeTurn()
+	ID = playerB
+	takeTurn(ID)
 	emit_signal("disableB")
 
 func _on_C_pressed():
-	ID = 3
-	takeTurn()
+	ID = playerC
+	takeTurn(ID)
 	emit_signal("disableC")

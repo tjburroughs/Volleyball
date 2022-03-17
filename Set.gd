@@ -13,14 +13,12 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if (signal == 0):
-		text = "Set!"
-	elif (signal == 1):
-		text = "Player A"
-	elif (signal == 2):
-		text = "Player B"
-	elif (signal == 3):
-		text = "Player C"
+	if (signal is Player):
+		text = signal.name
+	elif (signal == 0):
+		text = "Set"
+	else:
+		print('ERROR')
 
 
 func _on_VolleyBall_Select_2(ID):
