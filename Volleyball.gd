@@ -19,14 +19,15 @@ signal disableC
 signal enableA
 signal enableB
 signal enableC
-var shotProfile = 0
+var attackShot = 0
 
-var playerA = load('res://Player.gd').new('Player A',1,2,3)
-var playerB = load('res://Player.gd').new('Player B',10,20,30)
-var playerC = load('res://Player.gd').new('Player C',100,200,300)
+var playerA = load('res://Player.gd').new('Player A')
+var playerB = load('res://Player.gd').new('Player B')
+var playerC = load('res://Player.gd').new('Player C')
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	initPlayerStats()
 	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -39,13 +40,18 @@ func _process(delta):
 	#repeat
 	if (focus > 3):
 		print('You hit the ball with:')
-		print(shotProfile)
+		print(attackShot)
 		emit_signal("enableA")
 		emit_signal("enableB")
 		emit_signal("enableC")
 		focus = 1
-		shotProfile = 0
+		attackShot = 0
 	pass
+
+func initPlayerStats():
+	playerA.addStats(1,2,3)
+	playerB.addStats(10,20,30)
+	playerC.addStats(100,200,300)
 
 func takeTurn(ID):
 	match focus:
@@ -80,7 +86,7 @@ func takeTurn(ID):
 			focus += 1
 
 func addToShot(stat):
-	shotProfile += stat
+	attackShot += stat
 
 func _on_A_pressed():
 	ID = playerA
