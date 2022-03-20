@@ -21,12 +21,19 @@ signal enableB
 signal enableC
 var attackShot = 0
 
+# Controllable players
 var playerA = load('res://Player.gd').new('Player A')
 var playerB = load('res://Player.gd').new('Player B')
 var playerC = load('res://Player.gd').new('Player C')
 
+# NPCs
+var player1 = load('res://Player.gd').new('Player 1')
+var player2 = load('res://Player.gd').new('Player 2')
+var player3 = load('res://Player.gd').new('Player 3')
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	seed(6)
 	initPlayerStats()
 	pass
 
@@ -41,6 +48,7 @@ func _process(delta):
 	if (focus > 3):
 		print('You hit the ball with:')
 		print(attackShot)
+		calculateDefense()
 		emit_signal("enableA")
 		emit_signal("enableB")
 		emit_signal("enableC")
@@ -52,6 +60,11 @@ func initPlayerStats():
 	playerA.addStats(1,2,3)
 	playerB.addStats(10,20,30)
 	playerC.addStats(100,200,300)
+
+	player1.addStats(1,2,3)
+	player2.addStats(10,20,30)
+	player3.addStats(100,200,300)
+
 
 func takeTurn(ID):
 	match focus:
@@ -102,3 +115,18 @@ func _on_C_pressed():
 	ID = playerC
 	takeTurn(ID)
 	emit_signal("disableC")
+
+
+func calculateDefense():
+	var IDs = [player1, player2, player3]
+	var opponentBumpID = IDs.pop_at(randi() % 3)
+	var opponentSetID = IDs.pop_at(randi() % 2)
+	var opponentSpikeID = IDs.pop_at(0)
+
+	var defenseShot = opponentBumpID.bumpStat + opponentSetID.setStat + opponentSpikeID.spikeStat
+	print('Defense hit with:')
+	print(defenseShot)
+	if (attackShot > defenseShot):
+		print('You won!')
+	else:
+		print('Defense hit ball, returning...')
